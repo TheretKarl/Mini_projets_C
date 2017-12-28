@@ -52,26 +52,28 @@ Station *creer_station(char *name){
 }
 
 Ligne ajouter_station_ligne_en_tete(Station *s, Ligne l){
-	if(l.premier == NULL){
-		l.premier = s;
-		return l;
+	Station *s2 = l.premier; // On sauvegarde
+	l.premier = s; // On place au debut
+	l.premier->suivant = s2; // On fait reference au suivant
+	if(s2 != NULL){
+		s2->precedent = s;
 	}
-	Station *s2 = l.premier; // On copie l'ancien premier element
-	l.premier = s; // On le place en tete
-	l.premier->suivant = s2; // On fait reference vers l'ancien premier element
-	s2->precedent = l.premier;
+	if(l.dernier == NULL){
+		l.dernier = s;
+	}
 	return l;
 }	
 
 Ligne ajouter_station_ligne_en_queue(Station *s, Ligne l){
-	if(l.dernier == NULL){
-		l.dernier = s;
-		return l;
+	Station *s2 = l.dernier; // On sauvegarde
+	l.dernier = s; // On le place a la fin
+	s->precedent = s2; // On fait reference au precedent
+	if(s2 != NULL){
+		s2->suivant = s;
 	}
-	Station *s2 = l.dernier; // On copie
-	l.dernier = s; // On le place en queue
-	l.dernier->precedent = s2; // On fait reference a l'ancien
-	s2->suivant = s;
+	if(l.premier == NULL){
+		l.premier = s;
+	}
 	return l;
 }
 

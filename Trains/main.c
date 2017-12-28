@@ -26,10 +26,13 @@ int main(){
 	Station *s2 = creer_station("Paris Nord");
 	Station *s3 = creer_station("Châtelet");
 	Station *s4 = creer_station("Paris Lyon");
+	Station *s5 = creer_station("Villiers");
 	metro_7 = ajouter_station_ligne_en_tete(s1, metro_7);
 	metro_7 = ajouter_station_ligne_en_tete(s2, metro_7);
-	//metro_7 = ajouter_station_ligne_en_queue(s3, metro_7);
+	metro_7 = ajouter_station_ligne_en_queue(s3, metro_7);
 	metro_7 = ajouter_station_ligne_en_tete(s4, metro_7);
+	metro_7 = ajouter_station_ligne_en_queue(s5, metro_7);
+	// metro_7 = ajouter_station_ligne_en_tete(s1, metro_7); // En guise de test --> chaine infinie qui s'auto reference
 	afficher_ligne(metro_7);
 	liberer_ligne(metro_7);
 	printf(" --- \n\n");
