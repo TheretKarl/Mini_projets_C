@@ -55,13 +55,15 @@ Ligne *creer_ligne(char *name){
 	return l;
 }
 
-Station *creer_station(char *name){
+Station *creer_station(char *name, int a, int b){
 	Station *s = (Station*)(malloc(sizeof(Station)));
 	if(s == NULL){
 		printf("Une erreur est survenue lors de l'allocation !\n");
 		return NULL;
 	}
 	s->type = random_a_b(0,4);
+	s->nb_max_personnes = random_a_b(a,b + 1);
+	s->nb_personnes = 0;
 	s->name = creer_name(name);
 	// Il y a initialement 0 personnes sur le quai
 	return s;
@@ -120,5 +122,28 @@ void liberer_ligne(Ligne *l){
 	free(l);
 }
 
+Ligne *creer_ligne_avec_fichier(char *name, char *nom_fichier, int a, int b){
+	/* Fonction qui cree une ligne portant le nom name
+	 * On ouvre le fichier nom_fichier et on lit les noms de stations
+	 * les nombres a et b servent à generer un nombre aleatoire de personnes sur le quai
+	 */
+	
+	FILE* fichier = NULL;
+	fichier = fopen(nom_fichier, "r");
+	if(fichier == NULL){
+		printf("Erreur lors de l'ouverture du fichier !");
+		return NULL;
+	}
+	Ligne *l = creer_ligne(name);
+	Station *s = NULL;
+	char chaine[100] = ""; // On part du principe qu'il y a aura au maximun 100 caracteres
+	while(fgets(chaine, 100, fichier) != NULL){
+			s = creer_station(chaine, a, b);
+			l = ajouter_station_ligne_en_tete(s, l);
+		}
+	fclose(fichier);
+	
+	return l;
+}
 // Fonctions de creation des trains et d'ajout aux lignes
 

@@ -3,7 +3,7 @@
 
 // Une station possede un nom et un nombre de personne en attente, de plus qu'un type(entier entre 0 et x)
 typedef struct _station{
-	int type; 
+	int type; // Influe sur le nombre de personnes qui descendent
 	char *name; // Dynamiquement
 	int nb_personnes; // Nombre de personnes sur le quai
 	int nb_max_personnes; 

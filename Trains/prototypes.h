@@ -9,11 +9,12 @@ int random_a_b(int a, int b);
 
 // Fonctions de creation de ligne et de station
 Ligne *creer_ligne(char *name);
-Station *creer_station(char *name); // Cree une station avec un nom
+Station *creer_station(char *name, int a, int b); // Cree une station avec un nom (max de personnes entre a et b)
 Ligne *ajouter_station_ligne_en_tete(Station *s, Ligne *l);
 Ligne *ajouter_station_ligne_en_queue(Station *s, Ligne *l);
 void afficher_ligne(Ligne *l);
 void liberer_ligne(Ligne *l);
+Ligne *creer_ligne_avec_fichier(char *name, char *nom_fichier, int a, int b);
 
 // Fonctions de creation des trains
 Wagon *creer_wagon(int place); // Alloue un wagon avec n places
