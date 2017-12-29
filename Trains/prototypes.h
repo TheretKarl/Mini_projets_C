@@ -15,13 +15,13 @@ Ligne *ajouter_station_ligne_en_queue(Station *s, Ligne *l);
 void afficher_ligne(Ligne *l);
 void liberer_ligne(Ligne *l);
 Ligne *creer_ligne_avec_fichier(char *name, char *nom_fichier, int a, int b);
+void afficher_etat_ligne(Ligne *l);
 
 // Fonctions de creation des trains
 Wagon *creer_wagon(int place); // Alloue un wagon avec n places
 void ajouter_wagon_train(Train *t, Wagon *w);
 Train *creer_train(int place, int longueur); // La place par wagon et le nombre de wagons
 void mettre_train_en_ligne(Train *t, Ligne *l); // Donner une ligne au train
-void mettre_train_en_ligne_n(Train *t, Ligne *l, int n); // Place le terrain selon n
 void liberer_train(Train *t);
 void afficher_etat_train(Train *t);
 

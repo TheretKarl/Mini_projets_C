@@ -97,16 +97,25 @@ Ligne *ajouter_station_ligne_en_queue(Station *s, Ligne *l){
 
 void afficher_ligne(Ligne *l){
 	Station *s = l->premier; // On prends le premier arret
-	afficher_name(l->name);
 	if(s == NULL){
 		printf("Ligne vide !\n");
 		return;
 	}
 	while(s->suivant != NULL){
-		printf("o-");
+		if(s->nb_personnes == s->nb_max_personnes){
+			printf("X-");
+		}
+		else {
+			printf("O-");
+		}
 		s = s->suivant; // On passe au suivant
 	}
-	printf("o\n");
+	if(s->nb_personnes == s->nb_max_personnes){
+		printf("X\n");
+	}
+	else {
+		printf("O\n");
+	}
 }
 
 void liberer_ligne(Ligne *l){
@@ -144,6 +153,12 @@ Ligne *creer_ligne_avec_fichier(char *name, char *nom_fichier, int a, int b){
 	fclose(fichier);
 	
 	return l;
+}
+
+void afficher_etat_ligne(Ligne *l){
+	// On considere que la ligne a bien a ete initialise !
+	printf("Voici la ligne %s :\n", l->name);
+	afficher_ligne(l);
 }
 // Fonctions de creation des trains et d'ajout aux lignes
 
@@ -208,29 +223,6 @@ void mettre_train_en_ligne(Train *t, Ligne *l){
 	}
 }
 
-void mettre_train_en_ligne_n(Train *t, Ligne *l, int n){
-	t->ligne = l;
-	Station *apparaitre = l->premier;
-	int i;
-	int direction = 0;
-	for(i=0; i < n; i++){
-		if(apparaitre->suivant == NULL){
-			// Vers la fin de la ligne
-			direction = 1;
-		}
-		else if(apparaitre->precedent == NULL){
-			direction = 0;
-		}
-		if(direction == 0){
-			apparaitre = apparaitre->suivant;
-		}
-		else {
-			apparaitre = apparaitre->precedent;
-		}
-	}
-	t->actuelle = apparaitre;
-}
-
 void liberer_train(Train *t){
 	Wagon *w = t->premier;
 	Wagon *w2;
@@ -243,23 +235,28 @@ void liberer_train(Train *t){
 }
 
 void afficher_etat_train(Train *t){
-	// On considere que la ligne a bien a ete initialise !
-	printf("Voici la ligne %s :\n", t->ligne->name);
-	afficher_ligne(t->ligne);
-	printf("[T]");
 	Wagon *w = t->premier;
 	if(w == NULL){
 		printf(" Vide !\n");
 		return;
 	}
+	printf("[T]");
 	int cpt = 0; int cpt_max = 0; // Permet de savoir combien de gens sont la
 	while(w != NULL){
 		cpt_max = cpt_max + w->nb_max_personnes;
 		cpt = cpt + w->nb_personnes;
-		printf("-[W]");
+		if(w->nb_personnes == w->nb_max_personnes){
+			printf("-[WP]");
+		}
+		else if(w->nb_personnes == 0) {
+			printf("-[WV]");
+		}
+		else {
+			printf("-[WL]");
+		}
 		w = w->suivant;
 	}
-	printf("\nIl y a %d sur %d personnes\n", cpt, cpt_max);
+	printf("\nIl y a %d sur %d personnes.\n", cpt, cpt_max);
 }
 
 // Fonctions de deplacement de train et des passagers
@@ -355,6 +352,9 @@ void train_action(Train *t){
 
 void remplir_station(Station *s){
 	s->nb_personnes = s->nb_personnes + (int)(s->nb_max_personnes * 0.2);
+	if(s->nb_personnes > s->nb_max_personnes){
+		s->nb_personnes = s->nb_max_personnes;
+	}
 }
 
 void remplir_ligne(Ligne *l){
