@@ -1,9 +1,9 @@
 #ifndef structures
 #define structures
 
-// Une station possede un nom et un nombre de personne en attente, de plus qu'un type(entier entre 0 et x)
+// Une station possede un nom et un nombre de personne en attente, de plus qu'un type(entier entre 1 et 4)
 typedef struct _station{
-	int type; // Influe sur le nombre de personnes qui descendent
+	int type; // Influe sur le nombre de personnes qui descendent sur la station
 	char *name; // Dynamiquement
 	int nb_personnes; // Nombre de personnes sur le quai
 	int nb_max_personnes; 
