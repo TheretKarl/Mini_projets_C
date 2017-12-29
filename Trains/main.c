@@ -14,7 +14,6 @@ int main(){
 	mettre_train_en_ligne(my_train, ma_ligne_fichier);
 	Train *t2 = creer_train(15,20);
 	mettre_train_en_ligne(t2, ma_ligne_fichier);
-	
 	Train *t3 = creer_train(10,25);
 	mettre_train_en_ligne(t3, ma_ligne_fichier);
 	
