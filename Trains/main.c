@@ -6,36 +6,14 @@
 
 int main(){
 	srand(time(NULL));
-	// Phase de test 1
-	Personne p;
-	p.type = 5;
-	printf("%d\n", p.type);
-	Station *s = NULL;
-	char *name = creer_name("chaine");
-	afficher_name(name);
-	liberer_name(name);
-	printf(" --- \n\n");
-	
-	// Phase de test 2
-	Ligne metro_7;
-	metro_7.premier = NULL;
-	metro_7.dernier = NULL;
-	metro_7.name = creer_name("Metro 7");
-	afficher_ligne(metro_7);
-	Station *s1 = creer_station("Waterloo");
-	Station *s2 = creer_station("Paris Nord");
-	Station *s3 = creer_station("Châtelet");
-	Station *s4 = creer_station("Paris Lyon");
-	Station *s5 = creer_station("Villiers");
-	metro_7 = ajouter_station_ligne_en_tete(s1, metro_7);
-	metro_7 = ajouter_station_ligne_en_tete(s2, metro_7);
-	metro_7 = ajouter_station_ligne_en_queue(s3, metro_7);
-	metro_7 = ajouter_station_ligne_en_tete(s4, metro_7);
-	metro_7 = ajouter_station_ligne_en_queue(s5, metro_7);
-	// metro_7 = ajouter_station_ligne_en_tete(s1, metro_7); // En guise de test --> chaine infinie qui s'auto reference
-	afficher_ligne(metro_7);
-	liberer_ligne(metro_7);
-	printf(" --- \n\n");
-	// Phase de test 3
+	Station *s1 = creer_station("Villiers");
+	Station *s2 = creer_station("Sarcelles");
+	Station *s3 = creer_station("Pierre");
+	Ligne *ma_ligne = creer_ligne("RER D");
+	ma_ligne = ajouter_station_ligne_en_queue(s1, ma_ligne);
+	ma_ligne = ajouter_station_ligne_en_queue(s2, ma_ligne);
+	ma_ligne = ajouter_station_ligne_en_tete(s3, ma_ligne);
+	afficher_ligne(ma_ligne);
+	liberer_ligne(ma_ligne);
 	return 0;
 }

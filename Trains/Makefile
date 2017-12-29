@@ -1,6 +1,4 @@
-# A faire !
-
-CFLAGS=-g 
+CFLAGS=-g
 CC=gcc
 
 all:main
