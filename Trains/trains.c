@@ -5,6 +5,14 @@
 
 // Les Fonctions de base
 
+int longueur_chaine(char *chaine){
+	int i = 0;
+	while(chaine[i] != '\0'){
+		i++;
+	}
+	return i;
+}
+
 char *creer_name(char *name){
 	// On calcule d'abord la longueur de la chaine
 	int i =0;
@@ -105,6 +113,9 @@ void afficher_ligne(Ligne *l){
 		if(s->nb_personnes == s->nb_max_personnes){
 			printf("X-");
 		}
+		else if(s->nb_personnes >= s->nb_max_personnes / 2){
+			printf("M-");
+		}
 		else {
 			printf("O-");
 		}
@@ -112,6 +123,9 @@ void afficher_ligne(Ligne *l){
 	}
 	if(s->nb_personnes == s->nb_max_personnes){
 		printf("X\n");
+	}
+	else if(s->nb_personnes >= s->nb_max_personnes / 2){
+			printf("M\n");
 	}
 	else {
 		printf("O\n");
@@ -369,3 +383,4 @@ void remplir_ligne(Ligne *l){
 		s = s->suivant;
 	}
 }
+

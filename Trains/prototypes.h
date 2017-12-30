@@ -2,6 +2,7 @@
 #define prototypes
 
 // Fonctions de base
+int longueur_chaine(char *chaine);
 char *creer_name(char *name);
 void afficher_name(char *name);
 void liberer_name(char *name);
@@ -37,6 +38,5 @@ void train_action(Train *t);
 void remplir_station(Station *s);
 void remplir_ligne(Ligne *l);
 
-// Fonctions de simulation de ligne et des trains
- 
+
 #endif

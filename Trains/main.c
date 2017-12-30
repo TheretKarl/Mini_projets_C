@@ -9,7 +9,7 @@
 
 int main(){
 	srand(time(NULL));
-	Ligne *ma_ligne_fichier = creer_ligne_avec_fichier("RER D", "RED_D.txt", 50, 100);
+	Ligne *ma_ligne_fichier = creer_ligne_avec_fichier("RER D", "RER_D.txt", 50, 100);
 	Train *my_train = creer_train(10, 5);
 	mettre_train_en_ligne(my_train, ma_ligne_fichier);
 	Train *t2 = creer_train(15,20);
