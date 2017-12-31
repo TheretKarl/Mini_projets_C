@@ -1,0 +1,5 @@
+texte1
+texte2
+chaine
+test
+fichier.txt

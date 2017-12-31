@@ -5,6 +5,7 @@ Creer un train avec *creer_train(int place, int longueur)
 L'ajouter sur la ligne qui correpondant
 
 Puis une fois dans la boucle principale :
+ 
 	printf("%d\n", i);
 	afficher_etat_ligne(ligne_choisie);
 	Pour les n trains qui sont sur la ligne :
