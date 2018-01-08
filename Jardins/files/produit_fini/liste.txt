@@ -1,3 +1,6 @@
 files/produit_fini/tomate.txt
 files/produit_fini/haricot.txt
 files/produit_fini/pomme.txt
+files/produit_fini/cerise.txt
+files/produit_fini/pomme_de_terre.txt
+files/produit_fini/abricot.txt
