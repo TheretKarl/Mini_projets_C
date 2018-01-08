@@ -1,0 +1,3 @@
+files/produit_fini/tomate.txt
+files/produit_fini/haricot.txt
+files/produit_fini/pomme.txt
