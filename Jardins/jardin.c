@@ -1,10 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "structures.h"
 #define MAX_FILE 200
 
 // Fonctions de bases
+int random_a_b(int a, int b){
+	// Renvoie un nombre entra et b exclu
+	return rand()%(b-a) + a;
+}
 
 char *creer_name(char *name){
 	// On calcule d'abord la longueur de la chaine (sans les retour a la ligne)
@@ -199,4 +204,210 @@ int find_name(produit_fini **tableau, char *name){
 	}
 	return -1;
 }
+
+produit_fini *allouer_produit_fini_copy(produit_fini **tableau, char *name){
+	int found = find_name(tableau, name);
+	if(found != -1){
+		produit_fini *copy = NULL;
+		copy = allouer_produit_fini(tableau[found]->name, tableau[found]->data);
+		if(copy == NULL){
+			return NULL;
+		}
+		return copy;
+	}
+	return NULL; // Rien ne semble correspondre
+}
 //
+
+// Les plantes
+
+plante_unique *allouer_plante_unique(char *name, int croissance, char *name_produit){
+	plante_unique *plante = NULL;
+	plante = (plante_unique *)(malloc(sizeof(plante_unique)));
+	if(plante == NULL){
+		printf("Erreur lors de l'allocation !");
+		return NULL;
+	}
+	
+	plante->name = creer_name(name);
+	plante->croissance = 0;
+	plante->croissance_max = croissance;
+	plante->name_produit = creer_name(name_produit);
+	return plante;
+}
+
+
+void free_plante_unique(plante_unique *plante){
+	free(plante->name);
+	free(plante->name_produit);
+	free(plante);
+}
+
+void afficher_plante_unique(plante_unique *plante){
+	printf("%s : %d/%d --> %s\n", plante->name, plante->croissance, plante->croissance_max, plante->name_produit);
+}
+
+produit_fini *donner_fruit_plante_unique(plante_unique *plante, produit_fini **tableau){
+	return allouer_produit_fini_copy(tableau, plante->name_produit);
+}
+
+plante_generatrice *allouer_plante_generatrice(char *name, int croissance, char *name_produit, int temps, int timing){
+	plante_generatrice *plante = NULL;
+	plante = (plante_generatrice *)(malloc(sizeof(plante_generatrice)));
+	if(plante == NULL){
+		printf("Erreur lors de l'allocation !");
+		return NULL;
+	}
+	
+	plante->name = creer_name(name);
+	plante->croissance = 0;
+	plante->croissance_max = croissance;
+	plante->name_produit = creer_name(name_produit);
+	plante->temps_restant = temps;
+	plante->timing_actuelle = 0;
+	plante->timing = timing;
+	return plante;
+}
+
+void free_plante_generatrice(plante_generatrice *plante){
+	free(plante->name);
+	free(plante->name_produit);
+	free(plante);
+}
+
+void afficher_plante_generatrice(plante_generatrice *plante){
+	printf("%s : %d/%d --> %s\n", plante->name, plante->croissance, plante->croissance_max, plante->name_produit);
+	if(plante->croissance == plante->croissance_max){
+		printf("Prochaine recolte : %d/%d, ", plante->timing_actuelle, plante->timing);
+		printf("temps de vie restant : %d", plante->temps_restant);
+	}
+	printf("\n");
+}
+
+produit_fini *donner_fruit_plante_generatrice(plante_generatrice *plante, produit_fini **tableau){
+	return allouer_produit_fini_copy(tableau, plante->name_produit);
+}
+
+// Les ressources et leur stockage
+poche_produit_fini *allouer_poche_produit_fini(produit_fini *product){
+	poche_produit_fini *p = NULL;
+	p = (poche_produit_fini *)(malloc(sizeof(poche_produit_fini)));
+	if(p == NULL){
+		printf("Erreur lors de l'allocation !");
+		return NULL;
+	}
+	
+	p->produit = product;
+	p->suivant = NULL;
+	return p;
+}
+
+void afficher_poche_produit_fini(poche_produit_fini *poche){
+	if(poche->produit != NULL){
+		afficher_produit_fini(poche->produit);
+	}
+}
+
+void free_poche_produit_fini(poche_produit_fini *poche){
+	// Fonction rarement utilisee, elle liberer la poche ET le produit
+	if(poche->produit != NULL){
+		free_produit_fini(poche->produit);
+	}
+	free(poche);
+}
+
+inventaire_produit_fini *allouer_inventaire_produit_fini(int numero){
+	inventaire_produit_fini *i = NULL;
+	i = (inventaire_produit_fini *)(malloc(sizeof(inventaire_produit_fini)));
+	if(i == NULL){
+		printf("Erreur lors de l'allocation !");
+		return NULL;
+	}
+	
+	i->numero = numero;
+	i->premier = NULL;
+	return i;
+}
+
+void free_inventaire_produit_fini(inventaire_produit_fini *inv){
+	poche_produit_fini *copy = inv->premier;
+	poche_produit_fini *copy2 = NULL;
+	while(copy != NULL){
+		copy2 = copy;
+		copy = copy->suivant;
+		if(copy2 != NULL){
+			free_poche_produit_fini(copy2);
+		}
+	}
+	free(inv);
+}
+
+void afficher_inventaire_produit_fini(inventaire_produit_fini *inv){
+	poche_produit_fini *copy = inv->premier;
+	if(copy == NULL){
+		return;
+	}
+	
+	int i = 0;
+	while(copy != NULL){
+		printf("%d : ", i);
+		afficher_poche_produit_fini(copy);
+		copy = copy->suivant;
+		i++;
+	}
+}
+
+void ajouter_poche_inventaire_produit_fini(inventaire_produit_fini *inv, poche_produit_fini *poche){
+	if(inv->premier == NULL){
+		inv->premier = poche;
+		return;
+	}
+	poche_produit_fini *copy = inv->premier;
+	while(copy->suivant != NULL){
+		copy = copy->suivant;
+	}
+	copy->suivant = poche;
+}
+
+produit_fini *retirer_poche_inventaire_produit_fini(inventaire_produit_fini *inv, char *name){
+	// Retire et renvoie la premirer occurence d'un fruit nomme name
+	poche_produit_fini *copy = inv->premier;
+	poche_produit_fini *copy2 = NULL;
+	produit_fini *renvoie = NULL;
+	if(inv == NULL){
+		return NULL;
+	}
+	
+	while(copy != NULL && renvoie == NULL){
+		if(strcmp(copy->produit->name, name) == 0){
+			renvoie = copy->produit;
+		}
+		copy2 = copy; // On garde en memoire celui d'avant
+		copy = copy->suivant;
+	}
+	copy2->suivant = copy->suivant;
+	free(copy); // On libere la poche devenu inutile
+	return renvoie;
+}
+
+inventaire_produit_fini *allouer_inventaire_produit_fini_n(produit_fini **tableau, int n, int numero){
+	// Fonctions de generation pseudo-aleatoire d'un inventaire de taille avec un tableau de reference
+	inventaire_produit_fini *inv = allouer_inventaire_produit_fini(numero);
+	int length = 0; //On calcule la longueur pour generer des nombres dans bon intervalle
+	while(tableau[length] != NULL){
+		length++;
+	}
+	
+	poche_produit_fini *poche = NULL;
+	produit_fini *copy = NULL;
+	int i;
+	int temp; // Variable aleatoire
+	for(i = 0; i < n; i++){
+		temp = random_a_b(0, length);
+		copy = allouer_produit_fini(tableau[temp]->name, tableau[temp]->data);
+		poche = allouer_poche_produit_fini(copy);
+		ajouter_poche_inventaire_produit_fini(inv, poche);
+	}
+	
+	return inv;
+}
