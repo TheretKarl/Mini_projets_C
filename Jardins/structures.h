@@ -36,4 +36,21 @@ typedef struct _inventaire_produit_fini{
 	poche_produit_fini *premier;
 }inventaire_produit_fini;
 
+// Gestion de l'environnement
+
+typedef struct _plante{
+	plante_unique *unique;
+	plante_generatrice *generatrice;
+}plante;
+
+typedef struct _rangee{
+	int longueur;
+	plante **plantee;
+}rangee;
+
+typedef struct _donnee_ref{
+	produit_fini **tab_produit;
+	plante **tab_plante;
+}donnee_ref;
+
 #endif

@@ -1,0 +1,6 @@
+generatrice
+tomatier
+tomate
+10
+20
+4

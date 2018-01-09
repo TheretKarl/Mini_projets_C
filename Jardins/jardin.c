@@ -139,11 +139,9 @@ produit_fini *allouer_produit_fini_file(char *name_file){
 	}
 	
 	char name[MAX_FILE] = "";
-	char *chaine;
 	int data = 0;
 	
 	fgets(name, MAX_FILE,file);
-	chaine = creer_name(name);
 	fscanf(file, "%d", &data);
 	fclose(file);
 	
@@ -185,7 +183,7 @@ void afficher_tableau_produit_fini(produit_fini **tableau){
 	}
 }
 
-void free_tableau_produit_fini(char **tableau){
+void free_tableau_produit_fini(produit_fini **tableau){
 	int i = 0;
 	while(tableau[i] != NULL){
 		free(tableau[i]);
@@ -276,9 +274,9 @@ void free_plante_generatrice(plante_generatrice *plante){
 }
 
 void afficher_plante_generatrice(plante_generatrice *plante){
-	printf("%s : %d/%d --> %s\n", plante->name, plante->croissance, plante->croissance_max, plante->name_produit);
+	printf("%s : %d/%d --> %s", plante->name, plante->croissance, plante->croissance_max, plante->name_produit);
 	if(plante->croissance == plante->croissance_max){
-		printf("Prochaine recolte : %d/%d, ", plante->timing_actuelle, plante->timing);
+		printf("\nProchaine recolte : %d/%d, ", plante->timing_actuelle, plante->timing);
 		printf("temps de vie restant : %d", plante->temps_restant);
 	}
 	printf("\n");
@@ -410,4 +408,210 @@ inventaire_produit_fini *allouer_inventaire_produit_fini_n(produit_fini **tablea
 	}
 	
 	return inv;
+}
+
+plante *allouer_plante(plante_unique *p1, plante_generatrice *p2){
+	// Un seul des parametres peut etre remplis, le ou les autre(s) sont a NULL
+	plante *p = NULL;
+	p = (plante *)(malloc(sizeof(plante)));
+	if(p == NULL){
+		printf("Erreur lors de l'allocation !");
+		return NULL;
+	}
+	
+	p->unique = p1;
+	p->generatrice = p2;
+	
+	return p;
+}
+
+void free_plante(plante *p){
+	if(p->unique != NULL){
+		free_plante_unique(p->unique);
+	}
+	if(p->generatrice != NULL){
+		free_plante_generatrice(p->generatrice);
+	}
+	free(p);
+}
+
+void afficher_plante(plante *p){
+	if(p->unique != NULL){
+		afficher_plante_unique(p->unique);
+	}
+	else if(p->generatrice != NULL){
+		afficher_plante_generatrice(p->generatrice);
+	}
+	else {
+		printf("Vide\n");
+	}
+}
+
+plante **tableau_plante(int longueur){
+	plante **tab = NULL;
+	tab = (plante **)(malloc(sizeof(plante *) * longueur));
+	if(tab == NULL){
+		printf("Erreur lors de l'allocation !");
+		return NULL;
+	}
+	
+	return tab;
+}
+
+void free_tableau_plante(plante **tab, int longueur){
+	int i;
+	for(i = 0; i < longueur; i++){
+		free_plante(tab[i]);
+	}
+	free(tab);
+}
+
+rangee *creer_rangee(int longueur){
+	rangee *r = NULL;
+	r = (rangee *)(malloc(sizeof(rangee)));
+	if(r == NULL){
+		printf("Erreur lors de l'allocation !");
+		return NULL;
+	}
+	
+	r->longueur = longueur;
+	r->plantee = tableau_plante(longueur);
+	
+	return r;
+}
+
+void free_rangee(rangee *r){
+	free_tableau_plante(r->plantee, r->longueur);
+	free(r);
+}
+
+int planter_rangee(rangee *r, plante *p, int indice){
+	// Renvoie 1 si la plante a ete plantee (0 sinon)
+	
+	if(r->plantee[indice] == NULL){
+		// Aucune plante n'a deja ete plantee a cet endroit
+		r->plantee[indice] = p;
+		return 1;
+	}
+	return 0;
+}
+
+void afficher_rangee(rangee *r){
+	int i;
+	int n = r->longueur;
+	for(i = 0; i < n; i++){
+		afficher_plante(r->plantee[i]);
+	}
+}
+
+plante *allouer_plante_file(char *name_file){
+	FILE *file = NULL;
+	file = fopen(name_file, "r");
+	if(file == NULL){
+		fprintf(stderr, "File Error !");
+		return 0;
+	}
+	
+	// Remplissage du tableau
+	char name[MAX_FILE] = "";
+	char *uni = "unique";
+	char *gen  = "generatrice";
+	char chaine1[MAX_FILE] = "";
+	char chaine2[MAX_FILE] = "";
+	int data1, data2, data3;
+	
+	plante_unique *p1 = NULL;
+	plante_generatrice *p2 = NULL;
+	
+	char *temp;
+	fgets(name, MAX_FILE, file); // On identifie le type de la plante
+	temp = creer_name(name); // (Afin d'éviter le \n)
+	
+	if(strcmp(temp, uni) == 0){
+		fgets(chaine1, MAX_FILE, file);
+		fgets(chaine2, MAX_FILE, file);
+		fscanf(file, "%d", &data1);
+		
+		p1 = allouer_plante_unique(chaine1, data1, chaine2);
+	}
+	else if(strcmp(temp, gen) == 0){
+		fgets(chaine1, MAX_FILE, file);
+		fgets(chaine2, MAX_FILE, file);
+		fscanf(file, "%d", &data1);
+		fscanf(file, "%d", &data2);
+		fscanf(file, "%d", &data3);
+		
+		p2 = allouer_plante_generatrice(chaine1, data1, chaine2, data2, data3);
+	}
+
+	liberer_name(temp);
+	fclose(file);
+	
+	return allouer_plante(p1, p2);
+} 
+
+plante **allouer_tableau_plante(char *file_name){
+	// On cree d'abord notre base de reference
+	char **tab = tableau_chaines_file(file_name);
+	int length = 0; // On calcule la longueur
+	while(tab[length] != NULL){
+		length++;
+	}
+	
+	plante **tab_plante = NULL;
+	tab_plante = (plante **)(malloc(sizeof(plante *) * (length + 1)));
+	if(tableau_plante == NULL){
+		free_tableau_chaines_file(tab);
+		printf("Erreur lors de l'allocation !");
+		return NULL;
+	}
+	
+	int i;
+	for(i = 0; i < length; i++){
+		tab_plante[i] = allouer_plante_file(tab[i]);
+	}
+	
+	// Le dernier element est NULL pour signifier la fin
+	tab_plante[i] = NULL;
+	
+	free_tableau_chaines_file(tab);
+	return tab_plante;
+}
+
+void afficher_tableau_plante(plante **tab){
+	int i = 0;
+	while(tab[i] != NULL){
+		afficher_plante(tab[i]);
+		i++;
+	}
+} 
+
+// Liste de donnees
+donnee_ref *allouer_tableau_reference(char *prod, char *plantes){
+	donnee_ref *ref = NULL;
+	ref = (donnee_ref *)(malloc(sizeof(donnee_ref)));
+	if(ref == NULL){
+		printf("Erreur lors de l'allocation !");
+		return NULL;
+	}
+	
+	ref->tab_produit = allouer_tableau_produit_fini(prod);
+	ref->tab_plante = allouer_tableau_plante(plantes);
+	return ref;
+}
+
+void afficher_tableau_ref(donnee_ref *ref){
+	afficher_tableau_produit_fini(ref->tab_produit);
+	afficher_tableau_plante(ref->tab_plante);
+}
+
+void free_tableau_ref(donnee_ref *ref){
+	free_tableau_produit_fini(ref->tab_produit);
+	
+	int i = 0;
+	while(ref->tab_plante[i] != NULL){
+		i++;
+	}
+	free_tableau_plante(ref->tab_plante, i);
+	free(ref);
 }

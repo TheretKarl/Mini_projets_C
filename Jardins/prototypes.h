@@ -47,4 +47,23 @@ void ajouter_poche_inventaire_produit_fini(inventaire_produit_fini inv, poche_pr
 produit_fini retirer_poche_inventaire_produit_fini(inventaire_produit_fini, char *name);
 inventaire_produit_fini *allouer_inventaire_produit_fini_n(produit_fini **tableau, int n, int numero);
 
+// Gestion de l'environnement
+plante *allouer_plante(plante_unique *p1, plante_generatrice *p2);
+void free_plante(plante *p);
+void afficher_plante(plante *p);
+plante **tableau_plante(int longueur);
+void free_tableau_plante(plante **tab, int longueur);
+rangee *creer_rangee(int longueur);
+int planter_rangee(rangee *r, plante *p, int indice);
+void free_rangee(rangee *r);
+void afficher_rangee(rangee *r);
+plante *allouer_plante_file(char *name_file);
+plante **allouer_tableau_plante(char *file_name);
+void afficher_tableau_plante(plante **tab);
+
+// Liste des donnees
+donnee_ref *allouer_tableau_reference(char *prod, char *plantes);
+void afficher_tableau_ref(donnee_ref *ref);
+void free_tableau_ref(donnee_ref *ref);
+
 #endif
