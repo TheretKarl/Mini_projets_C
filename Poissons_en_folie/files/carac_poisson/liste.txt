@@ -1,2 +1,4 @@
 files/carac_poisson/sardine.txt
 files/carac_poisson/saumon.txt
+files/carac_poisson/pieuvre.txt
+files/carac_poisson/lambda.txt

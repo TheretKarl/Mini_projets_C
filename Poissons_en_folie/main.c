@@ -8,13 +8,25 @@
 int main(){
 	srand(time(NULL));
 	
-	carac_poisson **ref = allouer_ref_carac_poisson("files/carac_poisson/liste.txt");
-	afficher_ref_carac_poisson(ref);
+	bassin *b = allouer_bassin(20, "files/carac_poisson/liste.txt");
+	int n;
+	for(n = 0; n < 20; n++){
+		create_poisson_bassin(b);
+	}
+	//afficher_bassin(b);
 	
-	poisson *p = allouer_poisson("sardine", ref);
-	afficher_poisson(p);
-	free_poisson(p);
+	pecheur *test = allouer_pecheur_file("Univers");
+	afficher_pecheur(test);
 	
-	free_ref_carac_poisson(ref);
+	for(n = 0; n < 100; n++){
+		pecher_poisson_bassin(test, b);
+	}
+	
+	afficher_pecheur(test);
+	afficher_bassin(b);
+	free_bassin(b);
+	save_game(test, "Univers");
+	free_pecheur(test);
+
 	return 0;
 }
