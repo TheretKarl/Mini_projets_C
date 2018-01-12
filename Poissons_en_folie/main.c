@@ -8,25 +8,27 @@
 int main(){
 	srand(time(NULL));
 	
-	bassin *b = allouer_bassin(20, "files/carac_poisson/liste.txt");
+	bassin *b = allouer_bassin(100, "files/carac_poisson/liste.txt");
 	int n;
-	for(n = 0; n < 20; n++){
+	for(n = 0; n < 100; n++){
 		create_poisson_bassin(b);
 	}
-	//afficher_bassin(b);
 	
-	pecheur *test = allouer_pecheur_file("Univers");
+	//new_game("my_game");
+	pecheur *test = allouer_pecheur_file("my_game");
 	afficher_pecheur(test);
 	
-	for(n = 0; n < 100; n++){
+	for(n = 0; n < 30; n++){
 		pecher_poisson_bassin(test, b);
-	}
+	} 
 	
 	afficher_pecheur(test);
-	afficher_bassin(b);
 	free_bassin(b);
-	save_game(test, "Univers");
+	for(n = 0; n < 30; n++){
+		vendre_poisson(test, "sardine");
+	}
+	afficher_pecheur(test);
+	save_game(test, "my_game");
 	free_pecheur(test);
-
 	return 0;
 }

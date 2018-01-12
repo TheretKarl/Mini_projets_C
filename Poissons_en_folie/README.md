@@ -1,5 +1,5 @@
-Des problemes de liberation de memoire semblent apparaitre de maniere aleatoire
-Sans qu'on puisse prevoir quand, ni d'où ils viennent
-L'origine viendrait de listes.txt :
-	Aleatoirement, quand on retire ou ajoute un poisson dans la liste, la liberation de memoire plante
-	et affiche une corruption error, memoire deja liberee ?
+Programme simple de simulation de peche de poissons
+Notions utilisees :
+	Structures de donnes, liste_chaines, tableau de pointeurs, lecture et ecriture de fichier selon un protocole precis,
+	passage de d'adresse de pointeur, sauvegarde de partie
+	

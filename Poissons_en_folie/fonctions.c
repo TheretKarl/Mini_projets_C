@@ -3,7 +3,7 @@
 #include <string.h>
 #include "structures.h"
 #include <time.h>
-#define MAX_FILE 200
+#define MAX_FILE 300
 
 int length_str(char *str){
 	int i =0;
@@ -20,10 +20,7 @@ int random_a_b(int a, int b){
 
 char *creer_name(char *name){
 	// On calcule d'abord la longueur de la chaine (sans les retour a la ligne)
-	int i =0;
-	while(name[i] != '\0' && name[i] != '\n'){
-		i++;
-	}
+	int i = length_str(name);
 	char *s = (char*)(malloc(sizeof(char) * (i + 1)));
 	if(s == NULL){
 		printf("Erreur survenue lors de l'allocation !");
@@ -171,23 +168,21 @@ carac_poisson *allouer_carac_poisson_file(char *file_name){
 	}
 	
 	int i1,i2,i3,i4; // Pour les autre entiers
-	char chaine[MAX_FILE] = "";
-	char *copy1; char *copy2;
+	char chaine1[MAX_FILE] = "";
+	char chaine2[MAX_FILE] = "";
 
 	// On recupere
-	fgets(chaine, MAX_FILE, file);
-	copy1 = creer_name(chaine);
-	fgets(chaine, MAX_FILE, file);
-	copy2 = creer_name(chaine);
+	fgets(chaine1, MAX_FILE, file);
+	fgets(chaine2, MAX_FILE, file);
 	fscanf(file, "%d %d %d %d", &i1, &i2, &i3, &i4);
 	
 	fclose(file);
 	
 	// On cree en placant les bonnes informations
 	carac_poisson *ca = NULL;
-	ca = allouer_carac_poisson(copy1, copy2, i1, i2, i3, i4);
-	liberer_name(copy1);
-	liberer_name(copy2);
+	ca = allouer_carac_poisson(chaine1, chaine2, i1, i2, i3, i4);
+	//liberer_name(copy1);
+	//liberer_name(copy2);
 	
 	return ca;
 }
@@ -358,6 +353,32 @@ void afficher_liste_poisson(liste_poisson *l){
 	}
 }
 
+liste_poisson *remove_element_liste_poisson(liste_poisson *l, char *name, poisson **p){
+	// passer &p lors de l'appel de la fonction
+	liste_poisson *copy1 = l;
+	liste_poisson *copy2 = NULL;
+	
+	while(copy1 != NULL){
+		if(strcmp(name, copy1->fish->name) == 0){
+			if(copy2 == NULL){
+				// premier element de la liste correspont
+				l = l->suivant;
+			}
+			else {
+				copy2->suivant = copy1->suivant;
+			}
+			*p = copy1->fish;
+			free(copy1); // On libere cette partie de liste (le poisson est renvoye par adresse sans etre free_malloc)
+			return l; 
+		}
+		copy2 = copy1;
+		copy1 = copy1->suivant;
+	}
+	
+	*p = NULL; // Afin de s'assurer qu'il n'a rien trouve selon le name
+	return l;
+}
+
 char **allouer_names_fish(carac_poisson **ref){
 	int i = 0;
 	while(ref[i] != NULL){
@@ -365,7 +386,7 @@ char **allouer_names_fish(carac_poisson **ref){
 	}
 	
 	char **names = NULL;
-	names = (char **)(malloc(sizeof(char *) * i));
+	names = (char **)(malloc(sizeof(char *) * (i + 1)));
 	if(names == NULL){
 		printf("Erreur d'allocation de memoire !");
 		return NULL;
@@ -382,15 +403,17 @@ char **allouer_names_fish(carac_poisson **ref){
 }
 
 void free_names_fish(char **names_fish){
+	
 	if(names_fish == NULL){
 		return;
 	}
+	
 	int i =0;
 	while(names_fish[i] != NULL){
 		liberer_name(names_fish[i]);
 		i++;
 	}
-	free_names_fish;
+	free(names_fish);
 }
 
 poisson **allouer_stock_poisson(int taille){
@@ -616,7 +639,7 @@ poisson *bassin_poisson(bassin *b){
 	for(i = 0; i < length; i++){
 		if(b->stock[i] != NULL){
 			p = b->stock[i];
-			b->stock[i] = NULL; // Le poisson est retire du poisson (que la peche soit reussi ou non)
+			b->stock[i] = NULL; // Le poisson est retire du bassin (que la peche soit reussi ou non)
 			return p; // On le renvoie
 		}
 	}
@@ -624,6 +647,11 @@ poisson *bassin_poisson(bassin *b){
 }
 
 void pecher_poisson_bassin(pecheur *p, bassin *b){
+	if(p->energie == 0){
+		return;
+	}
+	p->energie = p->energie -1;
+	
 	poisson *p_premier = bassin_poisson(b);
 	
 	if(p_premier == NULL){
@@ -634,6 +662,18 @@ void pecher_poisson_bassin(pecheur *p, bassin *b){
 	if(random_a_b(0, p_premier->resistance) == 0){
 		printf("Poisson peche !\n");
 		add_poisson_pecheur(p, p_premier);
+	}
+}
+
+void vendre_poisson(pecheur *p, char *name_poisson){
+	// Le pecheur vends un poisson portant le nom
+	poisson *fish;
+	p->l = remove_element_liste_poisson(p->l, name_poisson, &fish);
+	
+	// fish peut etre NULL si aucun poisson n'a ce name
+	if(fish != NULL){
+		p->argent = p->argent + (fish->taille * fish->valeur);
+		free_poisson(fish);
 	}
 }
 
@@ -693,5 +733,40 @@ void save_game(pecheur *p, char *save){
 	}
 	liberer_name(info_poissons);
 	
-	printf("Sauvegarde reussi !");
+	printf("Sauvegarde reussi !\n");
+}
+
+void new_game(char *save){
+	// Save est le nom du dossier de sauvegarde
+	char *chemin = create_str_add("files/saves", save, '/');
+	printf("%s\n", chemin);
+	char *poissons = create_str_add(chemin, "poissons.txt", '/');
+	char *fisher = create_str_add(chemin, "pecheur.txt", '/');
+	printf("%s\n%s\n", fisher, poissons);
+	liberer_name(chemin);
+	
+	// Faire une fonction d'appel pour demander un nom
+	pecheur *p = allouer_pecheur("player", 10, 0);
+	
+	FILE *file = NULL;
+	file = fopen(fisher, "w+");
+	if(file == NULL){
+		fprintf(stderr, "File Error !");
+		return;
+	}
+	
+	fclose(file);
+	liberer_name(fisher);
+	
+	file = fopen(poissons, "w+");
+	if(file == NULL){
+		fprintf(stderr, "File Error !");
+		return;
+	}
+
+	fclose(file);
+	liberer_name(poissons);
+	
+	save_game(p, save);
+	free_pecheur(p);
 }

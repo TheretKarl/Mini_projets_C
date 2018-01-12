@@ -1,2 +1,0 @@
-files/carac_poisson/sardine.txt
-files/carac_poisson/saumon.txt
