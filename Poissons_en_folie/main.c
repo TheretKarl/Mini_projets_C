@@ -5,17 +5,24 @@
 #include "prototypes.h"
 #include <time.h>
 
-int main(){
+int main(int argc, char* argv[]){
 	srand(time(NULL));
+	if(argc < 3){
+	  printf("Pas assez d'arguments !");
+	  return 0;
+	}
 	
-	bassin *b = allouer_bassin(100, "files/carac_poisson/liste.txt");
+	char *chaine = create_str_add("files/carac_poisson", argv[1], '/');
+	printf("%s\n", chaine);
+	bassin *b = allouer_bassin(100, chaine);
 	int n;
 	for(n = 0; n < 100; n++){
 		create_poisson_bassin(b);
 	}
-	
-	//new_game("my_game");
-	pecheur *test = allouer_pecheur_file("my_game");
+
+	char *name_save = creer_name(argv[2]);
+	printf("%s\n name_save");
+	pecheur *test = allouer_pecheur_file(name_save);
 	afficher_pecheur(test);
 	
 	for(n = 0; n < 30; n++){
