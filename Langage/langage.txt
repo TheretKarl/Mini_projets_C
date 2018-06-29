@@ -1,0 +1,4 @@
+{ Je suis un nouveau langage
+Je test { a = 5 };
+Je suis [ a, b, c]
+}}]]]]]]]

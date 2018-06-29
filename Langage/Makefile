@@ -1,14 +1,12 @@
 CFLAGS=-g
 CC=gcc
-LIB_SRC = fonctions.c
-LIB_OBJ = $(LIB_SRC:.c=.o)
 
 all:main
 
-fonctions.o: prototypes.h fonctions.c
+fonctions.o:  prototypes.h fonctions.c
 	$(CC) -c $(CFLAGS) fonctions.c
 
-main.o:  prototypes.h main.c
+main.o: prototypes.h main.c
 	$(CC) -c $(CFLAGS) main.c
 
 main:fonctions.o main.o  prototypes.h
