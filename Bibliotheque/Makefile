@@ -1,21 +1,27 @@
-CFLAGS=-g
-CC=gcc
-LIB_SRC = fonctions.c
+CC = gcc
+CFLAGS = -g
+AR = ar
+ARFLAGS = cr
+LIB_SRC = fonctions_base.c fonctions_list.c fonctions_maths.c
 LIB_OBJ = $(LIB_SRC:.c=.o)
+RANLIB = ranlib
 
-all:main
 
-fonctions.o: prototypes.h fonctions.c
-	$(CC) -c $(CFLAGS) fonctions.c
+all: libperso.a main_test
 
-main.o:  prototypes.h main.c
-	$(CC) -c $(CFLAGS) main.c
+%.o : %.c
+	$(CC) -c $< -o $@
 
-main:fonctions.o main.o  prototypes.h
-	$(CC) -o main $(CFLAGS) fonctions.o main.o
+libperso.a: prototypes.h $(LIB_OBJ)
+	$(AR) $(ARFLAGS) $@ $(LIB_OBJ)
+	$(RANLIB) $@
 
-clean: 
-	rm -f *.o main
+main_test: my_main.o libperso.a 
+	$(CC) -o $@ $(CFLAGS) $^
 
-mrproper:
-	rm *.o
+clean :
+	rm -f *.o
+	rm -f main_test libperso.a
+
+.PHONY: all clean
+
